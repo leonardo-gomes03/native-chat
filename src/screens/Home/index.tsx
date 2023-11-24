@@ -1,10 +1,23 @@
-import { useState } from "react";
+import { JSXElementConstructor, useEffect, useState } from "react";
+import { io } from "socket.io-client";
 import { Button, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-export default function Home({ navigation }) {
+export default function Home({ navigation, setSocket }) {
   const [name, setName] = useState<string>("");
 
+  const wSocket = io("http://10.0.0.120:3001");
+
   const disabled = !(name.length > 3);
+
+  const handleGoToChat = async () => {
+    wSocket.emit("set_username", name);
+    setSocket(wSocket);
+    navigation.navigate("Chat", { username: name });
+  };
+
+  useEffect(() => {
+    wSocket.connect();
+  }, []);
 
   return (
     <View className="flex-1 justify-center items-center">
@@ -16,7 +29,7 @@ export default function Home({ navigation }) {
           onChange={(e) => setName(e.nativeEvent.text)}
         />
         <TouchableOpacity
-          onPress={() => navigation.navigate("Chat", { username: name })}
+          onPress={() => handleGoToChat()}
           className={`${
             disabled ? "bg-zinc-400" : "bg-blue-800"
           } px-4 py-2 rounded-md w-full`}
