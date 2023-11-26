@@ -4,7 +4,7 @@ const io = require("socket.io")(server, {
   cors: { origin: "*" },
 });
 
-const hostname = "10.0.0.120";
+const hostname = "192.168.0.126";
 
 const PORT = 3001;
 
@@ -19,9 +19,11 @@ io.on("connection", (socket) => {
     socket.data.username = username;
   });
 
-  socket.on("message", (text) => {
+  socket.on("message", (content) => {
+    console.log(content);
+    console.log(socket.data.username);
     io.emit("receive_message", {
-      text,
+      content,
       authorId: socket.id,
       author: socket.data.username,
     });

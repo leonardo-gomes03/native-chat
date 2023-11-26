@@ -1,48 +1,45 @@
 import { useEffect, useState } from "react";
 import { Button, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { io } from "socket.io-client";
+import { Socket, io } from "socket.io-client";
 
 interface Message {
   author: string;
   content: string;
 }
 
-export default function Chat({ navigation, route }) {
+// Defina os tipos para os parâmetros
+interface ChatProps {
+  navigation: any; // Substitua "any" pelos tipos específicos necessários
+  route: any; // Substitua "any" pelos tipos específicos necessários
+  socket: Socket; // Substitua "any" pelo tipo específico necessário para o objeto socket
+}
+
+export default function Chat({ navigation, route, socket }: ChatProps) {
   const { username } = route?.params;
 
-  const socket = io();
+  // console.log(socket);
 
   const [input, setInput] = useState<string>("");
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      author: "Person 1",
-      content:
-        "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Deserunt, non amet facilis accusamus enim, nam voluptatum laudantium at odit distinctio debitis odio ipsum velit excepturi in quis voluptates labore sed.",
-    },
-    {
-      author: "Person 2",
-      content:
-        "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Deserunt, non amet facilis accusamus enim, nam voluptatum laudantium at odit distinctio debitis odio ipsum velit excepturi in quis voluptates labore sed.",
-    },
-    {
-      author: "Person 3",
-      content: "Oi",
-    },
-    {
-      author: "Person 2",
-      content: "Oi",
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   const handleSendMessage = () => {
-    setMessages((prev) => [...prev, { author: username, content: input }]);
+    socket.emit("message", input);
     setInput("");
   };
 
-  // useEffect(() => {
-  //   socket.connect();
-  // },[])
+  useEffect(() => {
+    // Escute o evento 'mensagem' do servidor
+    socket.on("receive_message", (dados) => {
+      setMessages((prev) => [
+        ...prev,
+        { author: dados?.author, content: dados?.content },
+      ]);
+    });
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   return (
     <View className="bg-zinc-200 flex-1 justify-end">

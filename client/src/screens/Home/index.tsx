@@ -5,19 +5,15 @@ import { Button, Text, TextInput, TouchableOpacity, View } from "react-native";
 export default function Home({ navigation, setSocket }) {
   const [name, setName] = useState<string>("");
 
-  const wSocket = io("http://10.0.0.120:3001");
-
   const disabled = !(name.length > 3);
 
   const handleGoToChat = async () => {
+    const wSocket = io("http://192.168.0.126:3001");
+    wSocket.connect();
     wSocket.emit("set_username", name);
     setSocket(wSocket);
     navigation.navigate("Chat", { username: name });
   };
-
-  useEffect(() => {
-    wSocket.connect();
-  }, []);
 
   return (
     <View className="flex-1 justify-center items-center">
