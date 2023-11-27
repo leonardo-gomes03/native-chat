@@ -36,6 +36,15 @@ export default function Chat({ navigation, route, socket }: ChatProps) {
         { author: dados?.author, content: dados?.content },
       ]);
     });
+
+    socket.on("enter_chat", (dados) => {
+      dados !== username &&
+        setMessages((prev) => [
+          ...prev,
+          { author: dados, content: "Entrou no chat" },
+        ]);
+    });
+
     return () => {
       socket.disconnect();
     };

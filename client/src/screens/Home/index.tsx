@@ -18,7 +18,7 @@ export default function Home({ navigation, setSocket }) {
   return (
     <View className="flex-1 justify-center items-center">
       <View className="w-52 flex items-center gap-4">
-        <Text className="text-lg">Bem vindo ao Dev Chat</Text>
+        <Text className="text-lg">Bem vindo ao chat</Text>
         <TextInput
           placeholder="Coloque seu nome..."
           className="py-1 px-3 border-2 border-gray-300 rounded-md w-full "
