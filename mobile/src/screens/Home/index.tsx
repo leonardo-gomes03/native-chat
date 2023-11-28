@@ -8,7 +8,7 @@ export default function Home({ navigation, setSocket }) {
   const disabled = !(name.length > 3);
 
   const handleGoToChat = async () => {
-    const wSocket = io("http://192.168.0.126:3001");
+    const wSocket = io("http://10.0.0.120:3001");
     wSocket.connect();
     wSocket.emit("set_username", name);
     setSocket(wSocket);
