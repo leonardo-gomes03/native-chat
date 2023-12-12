@@ -4,7 +4,7 @@ const io = require("socket.io")(server, {
   cors: { origin: "*" },
 });
 
-const hostname = "192.168.0.126";
+const hostname = "10.0.0.120";
 
 const PORT = 3001;
 
@@ -27,8 +27,26 @@ io.on("connection", (socket) => {
     io.emit("receive_message", {
       content,
       authorId: socket.id,
-      author: socket.data.username,
+      author: socket.data,
     });
+  });
+
+  socket.on("allusers", async () => {
+    const res = [];
+    const sockets = await io.fetchSockets();
+    for (const socket of sockets) {
+      res.push({
+        id: socket.id,
+        data: socket.data,
+      });
+      console.log(socket.id);
+      console.log(socket.data);
+    }
+    io.emit("allusers", res);
+  });
+
+  socket.on("private_message", (socketId) => {
+    io.sockets.socket(socketId).emit("private_message", () => {});
   });
 });
 

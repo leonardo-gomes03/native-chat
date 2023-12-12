@@ -12,11 +12,17 @@ interface ChatProps {
   navigation: any; // Substitua "any" pelos tipos específicos necessários
   route: any; // Substitua "any" pelos tipos específicos necessários
   socket: Socket; // Substitua "any" pelo tipo específico necessário para o objeto socket
+  setSocket: Function;
+  username: string;
 }
 
-export default function Chat({ navigation, route, socket }: ChatProps) {
-  const { username } = route?.params;
-
+export default function AllChat({
+  navigation,
+  route,
+  socket,
+  setSocket,
+  username,
+}: ChatProps) {
   // console.log(socket);
 
   const [input, setInput] = useState<string>("");
@@ -31,9 +37,10 @@ export default function Chat({ navigation, route, socket }: ChatProps) {
   useEffect(() => {
     // Escute o evento 'mensagem' do servidor
     socket.on("receive_message", (dados) => {
+      console.log(dados);
       setMessages((prev) => [
         ...prev,
-        { author: dados?.author, content: dados?.content },
+        { author: dados.author?.username, content: dados?.content },
       ]);
     });
 
@@ -47,6 +54,7 @@ export default function Chat({ navigation, route, socket }: ChatProps) {
 
     return () => {
       socket.disconnect();
+      setSocket(null);
     };
   }, []);
 
@@ -54,12 +62,12 @@ export default function Chat({ navigation, route, socket }: ChatProps) {
     <View className="bg-zinc-200 flex-1 justify-end">
       <View>
         {messages.map((item, index) =>
-          item.author == username ? (
-            <MyMessage content={item.content} key={index} />
+          item?.author == username ? (
+            <MyMessage content={item?.content} key={index} />
           ) : (
             <OtherMessage
-              content={item.content}
-              author={item.author}
+              content={item?.content}
+              author={item?.author}
               key={index}
             />
           )
